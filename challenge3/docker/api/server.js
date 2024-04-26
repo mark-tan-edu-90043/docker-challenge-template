@@ -124,6 +124,31 @@ app.get('/api/books/:id', (req, res) => {
 
 });
 
+// Routes something horrible
+app.get('/api/clickthis', (req, res) => {    
+    
+    pool.getConnection((err, connection) => {
+        if (err) {
+            console.error('Error connecting to database: ' + err.stack);
+            return res.status(500).json({ error: 'Database error' });
+        }
+
+        // Query the database
+        connection.query('SELECT * FROM clickthis', (error, results, fields) => {
+            // Release the connection back to the pool
+            connection.release();
+
+            if (error) {
+                console.error('Error querying database: ' + error.stack);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
+            // Send the list of books as JSON response
+            res.json(results);
+        });
+    });
+
+});
 
 // Start the server
 const PORT = process.env.PORT || 3000;
